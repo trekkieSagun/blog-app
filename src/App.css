@@ -1,0 +1,25 @@
+.blog-item img {
+  height: 350px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.blog-item {
+  box-shadow: 1px 1px 8px 0px rgb(228, 228, 228);
+  margin: 15px 10px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.blog-info {
+  padding: 20px;
+}
+
+.blog-list img {
+  width: 300px;
+  height: 200px;
+}
+
+.blog-list Table td {
+  padding: 20px;
+}
