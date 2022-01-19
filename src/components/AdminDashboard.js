@@ -73,6 +73,8 @@ const AdminDashboard = () => {
             <th>Blog Title</th>
             <th>Description</th>
             <th>Image</th>
+            <th>Likes</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -84,6 +86,14 @@ const AdminDashboard = () => {
               <td>{blog.description}</td>
               <td>
                 <img src={`${imageUrl}/` + blog.image} alt="No preview" />{" "}
+              </td>
+              <td>{blog.totalLikes}</td>
+              <td>
+                {blog.published === "1" ? (
+                  <Button>Unpublish</Button>
+                ) : (
+                  <Button>Publish</Button>
+                )}
               </td>
               <td>
                 <Button variant="info" className="m-2">
