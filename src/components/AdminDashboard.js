@@ -5,9 +5,11 @@ import { Button, Form, Modal, Table } from "react-bootstrap";
 const baseUrl = process.env.REACT_APP_baseUrl;
 const imageUrl = process.env.REACT_APP_imageUrl;
 
-const AdminDashboard = () => {
+const AdminDashboard = (props) => {
   const [blogs, setBlogs] = useState();
   const [data, setData] = useState({ title: "", description: "", image: "" });
+
+  const [editMode, setEditMode] = useState(false);
 
   const [show, setShow] = useState(false);
 
@@ -16,12 +18,26 @@ const AdminDashboard = () => {
 
   const Auth = "Bearer ".concat(admin.adminToken);
 
-  const getBlogs = () => {
-    Axios.get(`${baseUrl}/getData`, {
+  const getBlogs = async () => {
+    const response = await Axios.get(`${baseUrl}/getData`, {
       headers: { Authorization: Auth },
-    }).then((result) => {
-      setBlogs(result.data.data);
     });
+    if (response.status === 200) {
+      setBlogs(response.data.data.reverse());
+    }
+  };
+
+  const getOneBlog = async (id) => {
+    const response = await Axios.get(`${baseUrl}/getData/${id}`, {
+      headers: { Authorization: Auth },
+    });
+
+    console.log(response);
+
+    if (response.status === 200) {
+      // setData(response.data.data());
+      console.log(response);
+    }
   };
 
   useEffect(() => {
@@ -44,21 +60,32 @@ const AdminDashboard = () => {
       ...data,
       image: e.target.files[0],
     });
-    console.log(data);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const postData = {
-      title: data.title,
-      description: data.description,
-      image: data.image[0].name,
-    };
-    Axios.post(`${baseUrl}/addData`, postData, {
+
+    let formData = new FormData();
+
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("image", data.image);
+
+    Axios.post(`${baseUrl}/addData`, formData, {
       headers: { Authorization: Auth },
     }).then((response) => {
-      console.log(response);
+      if (response.status === 200) {
+        getBlogs();
+        setShow(false);
+        alert("New blog added successfully");
+      }
     });
+  };
+
+  const handleUpdateClick = (id) => {
+    // setEditMode(true);
+    // setShow(true);
+    getOneBlog(id);
   };
 
   return (
@@ -80,7 +107,7 @@ const AdminDashboard = () => {
         </thead>
         <tbody>
           {blogs?.map((blog, index) => (
-            <tr>
+            <tr key={index}>
               <td>{index + 1}</td>
               <td>{blog.title}</td>
               <td>{blog.description}</td>
@@ -96,7 +123,11 @@ const AdminDashboard = () => {
                 )}
               </td>
               <td>
-                <Button variant="info" className="m-2">
+                <Button
+                  variant="info"
+                  className="m-2"
+                  onClick={handleUpdateClick(blog.id)}
+                >
                   Edit Blog
                 </Button>
                 <Button variant="danger">Delete Blog</Button>
